@@ -1,4 +1,5 @@
 
+import { SignalRProvider } from "./context/signalRContext";
 import "./globals.css";
 
 
@@ -10,9 +11,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body
-      >
-        {children}
+      <body>
+        <SignalRProvider>
+          {children}
+        </SignalRProvider>
       </body>
     </html>
   );
