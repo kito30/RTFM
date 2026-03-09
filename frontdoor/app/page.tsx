@@ -1,7 +1,6 @@
-import * as signalR from "@microsoft/signalr";
-
+import SystemInfo from "./components/SystemInfo";
 export default function Dasboard() {
     return (
-      
+      <SystemInfo />
    );
 }

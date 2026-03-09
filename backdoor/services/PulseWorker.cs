@@ -12,12 +12,17 @@ public class PulseWorker : BackgroundService
         this.monitor = monitor;
         this.hubContext = hubContext;
     }
+    
+    // This method will run in the background and send system info to connected clients every second
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         while (!stoppingToken.IsCancellationRequested)
         {
             var cpu = monitor.GetCpuUsage();
-            await hubContext.Clients.All.SendAsync("ReceiveData", cpu, cancellationToken: stoppingToken);
+            var memory = monitor.GetMemoryUsage();
+            var disk = monitor.GetDiskUsage();
+            var gpu = monitor.GetGpuUsage();
+            await hubContext.Clients.All.SendAsync("ReceiveData", cpu, memory, disk, gpu, cancellationToken: stoppingToken);
             Console.WriteLine($"[RTFM] Sent Pulse: {cpu}%");
             await Task.Delay(1000, stoppingToken); // Adjust the delay as needed
         }

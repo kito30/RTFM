@@ -25,7 +25,7 @@ export const SignalRProvider = ({children}: {children: React.ReactNode}) => {
     useEffect( () => {
         
         const newConnection: signalR.HubConnection = new signalR.HubConnectionBuilder()
-        .withUrl("http://localhost:5000/hub/monitor")
+        .withUrl("http://localhost:5276/hubs/monitor")
         .withAutomaticReconnect()
         .build();
         const startConnection = async () => {
@@ -33,7 +33,6 @@ export const SignalRProvider = ({children}: {children: React.ReactNode}) => {
                 await newConnection.start();
                 console.log("SignalR Connected.");
                 setIsConnected(true);
-
                 setConnection(newConnection);
             }
             catch (err) {
