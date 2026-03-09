@@ -5,6 +5,9 @@ namespace backdoor.services;
 public class PulseWorker : BackgroundService
 {
     private readonly ISysMonitor monitor; 
+    
+
+    // This is to use the hub outside of the hub class, so we can send data to clients from this background service
     private readonly IHubContext<MonitorHub> hubContext;
 
     public PulseWorker(ISysMonitor monitor, IHubContext<MonitorHub> hubContext)
@@ -18,13 +21,12 @@ public class PulseWorker : BackgroundService
     {
         while (!stoppingToken.IsCancellationRequested)
         {
-            var cpu = monitor.GetCpuUsage();
-            var memory = monitor.GetMemoryUsage();
-            var disk = monitor.GetDiskUsage();
-            var gpu = monitor.GetGpuUsage();
+            var cpu = monitor.CpuUsage;
+            var memory = monitor.MemoryUsage;
+            var disk = monitor.DiskUsage;
+            var gpu = monitor.GpuUsage;
             await hubContext.Clients.All.SendAsync("ReceiveData", cpu, memory, disk, gpu, cancellationToken: stoppingToken);
-            Console.WriteLine($"[RTFM] Sent Pulse: {cpu}%");
-            await Task.Delay(1000, stoppingToken); // Adjust the delay as needed
+            await Task.Delay(1000, stoppingToken);
         }
     }
 }

@@ -13,7 +13,9 @@ builder.Services.AddCors(options =>
                .AllowCredentials();
     });
 });
-builder.Services.AddSingleton<ISysMonitor, MockMonitor>();
+builder.Services.AddSingleton<ISysMonitor,  SysMonitor >();
+
+///register a background service
 builder.Services.AddHostedService<PulseWorker>();
 var app = builder.Build();
 

@@ -2,9 +2,10 @@ namespace backdoor.services;
 
 public interface ISysMonitor
 {
-    double GetCpuUsage();
-    double GetGpuUsage();
-    double GetMemoryUsage();
-    double GetDiskUsage();
+    double CpuUsage { get; }
+    double GpuUsage { get; }
+    double MemoryUsage { get; }
+    double DiskUsage { get; }
+    string OS { get; }
 }
 
