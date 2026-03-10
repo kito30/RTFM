@@ -1,4 +1,5 @@
 using backdoor.services;
+using Hardware.Info;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,9 +15,10 @@ builder.Services.AddCors(options =>
     });
 });
 builder.Services.AddSingleton<ISysMonitor,  SysMonitor >();
-
+builder.Services.AddSingleton<IHardwareInfo, HardwareInfo>();
 ///register a background service
 builder.Services.AddHostedService<PulseWorker>();
+
 var app = builder.Build();
 
 app.UseCors("AllowAll");
