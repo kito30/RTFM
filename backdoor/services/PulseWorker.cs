@@ -22,7 +22,14 @@ public class PulseWorker : BackgroundService
         while (!stoppingToken.IsCancellationRequested)
         {
             monitor.UpdateSystemInfo();
-            await hubContext.Clients.All.SendAsync("ReceiveData", monitor.CpuUsage, monitor.MemoryUsage, monitor.DiskUsage, monitor.GpuUsage, cancellationToken: stoppingToken);
+            await hubContext.Clients.All.SendAsync(
+                "ReceiveData",
+                monitor.CpuUsage,
+                monitor.MemoryUsage,
+                monitor.DiskUsage,
+                monitor.GpuUsage,
+                monitor.OS,
+                cancellationToken: stoppingToken);
             await Task.Delay(1000, stoppingToken);
         }
     }

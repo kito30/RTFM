@@ -12,7 +12,7 @@ export default function SystemInfo() {
       connection.on("ReceiveData", (
           cpuUsage: string, 
           memoryUsage: string,
-          diskUsage: string,
+          diskUsage: DiskMetric[],
           gpuUsage: string, 
           os: string) => {
             setSystemInfo({
@@ -28,16 +28,31 @@ export default function SystemInfo() {
       }, [connection, isConnected]);
 
     return (
-        <div>
+      <div className="p-4 max-w-2xl">
         <div className="text-2xl font-bold mb-4">
           Computer Resources
-        </div>  
-        <div>
+        </div>
+        <div className="mb-4 space-y-1">
           <div> CPU: {systemInfo?.cpuUsage}</div>
           <div> Memory: {systemInfo?.memoryUsage}</div>
-          <div> Disk: {systemInfo?.diskUsage}</div>
           <div> GPU: {systemInfo?.gpuUsage}</div>
           <div> OS: {systemInfo?.os}</div>
+        </div>
+
+        <div className="space-y-2">
+          {(systemInfo?.diskUsage ?? []).map((disk, index) => (
+            <div
+              key={`${disk.name}-${index}`}
+              className="flex items-center gap-3 rounded border border-zinc-700 bg-zinc-900 text-zinc-100 p-2"
+            >
+              <div className="h-12 w-16 rounded border border-zinc-700 bg-zinc-800" />
+              <div>
+                <div className="font-semibold leading-tight">
+                  {disk.name}: <span className="text-lime-400">{disk.usage}</span>
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
       </div>
     )
