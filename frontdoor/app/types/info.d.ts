@@ -1,13 +1,7 @@
-interface DiskMetric {
-    name: string;
-    type: string;
-    usage: string;
-}
-
 interface SystemInfo {
     cpuUsage: string;
     memoryUsage: string;
-    diskUsage: DiskMetric[];
-    gpuUsage: string;
+    diskUsage: { [key: string]: string };
+    gpuUsage: { [key: string]: string };
     os: string;
 }

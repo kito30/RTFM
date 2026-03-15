@@ -26,7 +26,10 @@ public partial class SysMonitor
         }
         catch
         {
-            DiskUsage = [new DiskMetric("Disk", "Unknown", "N/A")];
+            DiskUsage = new Dictionary<string, string>
+            {
+                ["Disk"] = "N/A"
+            };
         }
     }
 
@@ -37,7 +40,10 @@ public partial class SysMonitor
 
         if (currentTotalIoTimeMs is null)
         {
-            DiskUsage = [new DiskMetric("Disk", "I/O busy", "N/A")];
+            DiskUsage = new Dictionary<string, string>
+            {
+                ["Disk"] = "N/A"
+            };
             return;
         }
 
@@ -45,14 +51,20 @@ public partial class SysMonitor
         {
             linuxTotalIoTimeMs = currentTotalIoTimeMs.Value;
             linuxDiskSampleTimestamp = now;
-            DiskUsage = [new DiskMetric("Disk (All)", "I/O busy", "N/A")];
+            DiskUsage = new Dictionary<string, string>
+            {
+                ["Disk (All)"] = "N/A"
+            };
             return;
         }
 
         var elapsedMs = (now - linuxDiskSampleTimestamp.Value).TotalMilliseconds;
         if (elapsedMs <= 0)
         {
-            DiskUsage = [new DiskMetric("Disk", "I/O busy", "N/A")];
+            DiskUsage = new Dictionary<string, string>
+            {
+                ["Disk"] = "N/A"
+            };
             linuxTotalIoTimeMs = currentTotalIoTimeMs.Value;
             linuxDiskSampleTimestamp = now;
             return;
@@ -61,7 +73,10 @@ public partial class SysMonitor
         var deltaIoMs = Math.Max(0, currentTotalIoTimeMs.Value - linuxTotalIoTimeMs.Value);
         var busyPercent = Math.Clamp(deltaIoMs / elapsedMs * 100d, 0d, 100d);
 
-        DiskUsage = [new DiskMetric("Disk (All)", "I/O busy", $"{busyPercent:0.#}%")];
+        DiskUsage = new Dictionary<string, string>
+        {
+            ["Disk (All)"] = $"{busyPercent:0.#}%"
+        };
         linuxTotalIoTimeMs = currentTotalIoTimeMs.Value;
         linuxDiskSampleTimestamp = now;
     }
@@ -153,11 +168,16 @@ public partial class SysMonitor
                 var value = Math.Clamp(kvp.Value.NextValue(), 0f, 100f);
                 var drive = FindDrive(kvp.Key);
                 var diskLabel = BuildDiskLabel(drive, kvp.Key);
-                return new DiskMetric(diskLabel, string.Empty, $"{value:0.#}%");
+                return new KeyValuePair<string, string>(diskLabel, $"{value:0.#}%");
             })
-            .ToList();
+            .ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
 
-        DiskUsage = disks.Count > 0 ? disks : [new DiskMetric("Disk", "Disk", "N/A")];
+        DiskUsage = disks.Count > 0
+            ? disks
+            : new Dictionary<string, string>
+            {
+                ["Disk"] = "N/A"
+            };
     }
 
     private void UpdateDiskInfoForUnixLike()
@@ -169,12 +189,16 @@ public partial class SysMonitor
             {
                 var used = Math.Clamp((double)(drive.TotalSize - drive.AvailableFreeSpace) / drive.TotalSize * 100, 0d, 100d);
                 var name = string.IsNullOrWhiteSpace(drive.Name) ? "Disk" : drive.Name;
-                var type = string.IsNullOrWhiteSpace(drive.DriveFormat) ? "Filesystem" : drive.DriveFormat;
-                return new DiskMetric(name, type, $"{used:0.#}%");
+                return new KeyValuePair<string, string>(name, $"{used:0.#}%");
             })
-            .ToList();
+            .ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
 
-        DiskUsage = disks.Count > 0 ? disks : [new DiskMetric("Disk", "Filesystem", "N/A")];
+        DiskUsage = disks.Count > 0
+            ? disks
+            : new Dictionary<string, string>
+            {
+                ["Disk"] = "N/A"
+            };
     }
 
     private Drive? FindDrive(string instanceName)

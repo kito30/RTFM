@@ -9,22 +9,9 @@ export default function SystemInfo() {
     useEffect(() => {
       if (!connection || !isConnected) { return; }
 
-      connection.on("ReceiveData", (
-          cpuUsage: string, 
-          memoryUsage: string,
-          diskUsage: DiskMetric[],
-          gpuUsage: string, 
-          os: string) => {
-            setSystemInfo({
-                cpuUsage,
-                memoryUsage,
-                diskUsage,
-                gpuUsage,
-                os
-              }
-            );
-          }
-        );
+      connection.on("ReceiveData", (payload: SystemInfo) => {
+        setSystemInfo(payload);
+      });
       }, [connection, isConnected]);
 
     return (
@@ -35,20 +22,25 @@ export default function SystemInfo() {
         <div className="mb-4 space-y-1">
           <div> CPU: {systemInfo?.cpuUsage}</div>
           <div> Memory: {systemInfo?.memoryUsage}</div>
-          <div> GPU: {systemInfo?.gpuUsage}</div>
+        <div className="mb-4 space-y-1">
+          {Object.entries(systemInfo?.gpuUsage ?? {}).map(([name, usage]) => (
+            <div key={name}> GPU {name}: {usage}</div>
+          ))}
+        </div>
           <div> OS: {systemInfo?.os}</div>
         </div>
 
+
         <div className="space-y-2">
-          {(systemInfo?.diskUsage ?? []).map((disk, index) => (
+          {Object.entries(systemInfo?.diskUsage ?? {}).map(([name, usage]) => (
             <div
-              key={`${disk.name}-${index}`}
+              key={name}
               className="flex items-center gap-3 rounded border border-zinc-700 bg-zinc-900 text-zinc-100 p-2"
             >
               <div className="h-12 w-16 rounded border border-zinc-700 bg-zinc-800" />
               <div>
                 <div className="font-semibold leading-tight">
-                  {disk.name}: <span className="text-lime-400">{disk.usage}</span>
+                  {name}: <span className="text-lime-400">{usage}</span>
                 </div>
               </div>
             </div>

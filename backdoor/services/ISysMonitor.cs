@@ -3,9 +3,9 @@ namespace backdoor.services;
 public interface ISysMonitor
 {
     string CpuUsage { get; }
-    string GpuUsage { get; }
+    Dictionary<string, string> GpuUsage { get; }
     string MemoryUsage { get; }
-    IReadOnlyList<DiskMetric> DiskUsage { get; }
+    Dictionary<string, string> DiskUsage { get; }
     string OS { get; }
     void UpdateSystemInfo();
 }
