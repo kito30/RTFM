@@ -1,5 +1,5 @@
 import SystemInfo from "./components/SystemInfo";
-export default function Dasboard() {
+export default function Dashboard() {
     return (
       <SystemInfo />
    );

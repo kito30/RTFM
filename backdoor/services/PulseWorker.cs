@@ -30,7 +30,6 @@ public class PulseWorker : BackgroundService
                 gpuUsage = new Dictionary<string, string>(monitor.GpuUsage),
                 os = monitor.OS
             };
-            Console.WriteLine($"GPU Usage: {string.Join(", ", payload.gpuUsage.Select(kvp => $"{kvp.Key}: {kvp.Value}"))}");
             await hubContext.Clients.All.SendAsync(
                 "ReceiveData",
                 payload,
