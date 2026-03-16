@@ -10,7 +10,7 @@ interface SystemInfoData {
   cpuUsage: string;
   memoryUsage: string;
   diskUsage: { [key: string]: string };
-  gpuUsage: { [key: string]: string };
+  gpuUsage: Array<{ name: string; usage: string }>;
   os: string;
 }
 
@@ -72,12 +72,12 @@ export default function SystemInfo() {
         />
 
         {/* GPU Cards */}
-        {systemInfo?.gpuUsage && Object.entries(systemInfo.gpuUsage).map(([name, usage]) => (
+        {systemInfo?.gpuUsage && systemInfo.gpuUsage.map((gpu, index) => (
           <MetricCard
-            key={name}
-            title={`GPU: ${name}`}
-            value={usage}
-            percentage={parsePercentage(usage)}
+            key={`${gpu.name}-${index}`}
+            title={`GPU: ${gpu.name}`}
+            value={gpu.usage}
+            percentage={parsePercentage(gpu.usage)}
             icon={<GpuIcon />}
             color="indigo"
           />

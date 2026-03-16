@@ -26,8 +26,8 @@ public class PulseWorker : BackgroundService
             {
                 cpuUsage = monitor.CpuUsage,
                 memoryUsage = monitor.MemoryUsage,
-                diskUsage = new Dictionary<string, string>(monitor.DiskUsage),
-                gpuUsage = new Dictionary<string, string>(monitor.GpuUsage),
+                diskUsage = monitor.DiskUsage,
+                gpuUsage = monitor.GpuUsage,
                 os = monitor.OS
             };
             await hubContext.Clients.All.SendAsync(
