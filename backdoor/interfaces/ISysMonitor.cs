@@ -1,5 +1,3 @@
-using backdoor.records;
-
 namespace backdoor.interfaces;
 
 public interface ISysMonitor

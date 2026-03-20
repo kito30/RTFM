@@ -1,4 +1,3 @@
-using backdoor.interfaces;
 using Microsoft.AspNetCore.SignalR;
 
 namespace backdoor.services;

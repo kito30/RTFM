@@ -1,6 +1,4 @@
 using Hardware.Info;
-using backdoor.interfaces;
-using backdoor.records;
 
 namespace backdoor.services;
 
