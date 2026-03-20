@@ -1,6 +1,6 @@
-namespace backdoor.services;
+using backdoor.records;
 
-public record GpuInfo(string Name, string Usage);
+namespace backdoor.interfaces;
 
 public interface ISysMonitor
 {

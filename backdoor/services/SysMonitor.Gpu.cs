@@ -1,6 +1,6 @@
 using System.Diagnostics;
 using System.Runtime.Versioning;
-using Hardware.Info;
+using backdoor.records;
 
 namespace backdoor.services;
 

@@ -1,3 +1,4 @@
+using backdoor.interfaces;
 using backdoor.services;
 using Hardware.Info;
 
@@ -14,7 +15,7 @@ builder.Services.AddCors(options =>
                .AllowCredentials();
     });
 });
-builder.Services.AddSingleton<ISysMonitor,  SysMonitor >();
+builder.Services.AddSingleton<ISysMonitor, SysMonitor>();
 builder.Services.AddSingleton<IHardwareInfo, HardwareInfo>();
 ///register a background service
 builder.Services.AddHostedService<PulseWorker>();

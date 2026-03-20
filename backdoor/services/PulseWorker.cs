@@ -1,11 +1,11 @@
+using backdoor.interfaces;
 using Microsoft.AspNetCore.SignalR;
 
 namespace backdoor.services;
 
 public class PulseWorker : BackgroundService
 {
-    private readonly ISysMonitor monitor; 
-    
+    private readonly ISysMonitor monitor;
 
     // This is to use the hub outside of the hub class, so we can send data to clients from this background service
     private readonly IHubContext<MonitorHub> hubContext;
