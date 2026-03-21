@@ -2,7 +2,7 @@ namespace backdoor.services;
 using MimeKit;
 using MailKit.Net.Smtp;
 
-public class Mail : IMail
+public class Gmail : IMail
 {
     public string to { get; private set; }
     public string subject { get; private set; }
@@ -10,13 +10,16 @@ public class Mail : IMail
     
     public string fromEmail { get; private set; }
     private readonly MimeMessage message = new();
+    private readonly SmtpClient client = new();
+    private readonly IConfiguration _configuration;
 
-    public Mail(string to, string subject, string body, string fromEmail)
+    public Gmail(string to, string subject, string body, string fromEmail, IConfiguration configuration)
     {
         this.to = to;
         this.subject = subject;
         this.body = body;
         this.fromEmail = fromEmail;
+        _configuration = configuration;
         MailInit();
     }
 
@@ -28,12 +31,9 @@ public class Mail : IMail
         message.Body = new TextPart("plain") { Text = body };
     }
     
-    public void sendMail(string to, string subject, string body)
+    private async void ClientInit()
     {
-        // Implementation for sending mail goes here
-        // This is a placeholder and should be replaced with actual email sending logic
-        Console.WriteLine($"Sending mail to: {to}");
-        Console.WriteLine($"Subject: {subject}");
-        Console.WriteLine($"Body: {body}");
+        await client.ConnectAsync("smtp.gmail.com", 587, MailKit.Security.SecureSocketOptions.StartTls);
+        await client.AuthenticateAsync(_configuration["Gmail:UserEmail"], _configuration["Gmail:AppPassword"]);
     }
 }
