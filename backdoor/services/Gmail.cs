@@ -22,7 +22,6 @@ public class Gmail : IMail
         _configuration = configuration;
         MailInit();
     }
-
     private void MailInit()
     {
         message.From.Add(new MailboxAddress("System Alert", fromEmail));
@@ -31,9 +30,15 @@ public class Gmail : IMail
         message.Body = new TextPart("plain") { Text = body };
     }
     
-    private async void ClientInit()
+    private async Task ClientInit()
     {
         await client.ConnectAsync("smtp.gmail.com", 587, MailKit.Security.SecureSocketOptions.StartTls);
         await client.AuthenticateAsync(_configuration["Gmail:UserEmail"], _configuration["Gmail:AppPassword"]);
+    }
+    public async Task SendMail()
+    {
+        await ClientInit();
+        await client.SendAsync(message);
+        await client.DisconnectAsync(true);
     }
 }
