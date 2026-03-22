@@ -13,12 +13,7 @@ public class EmailAlarm
 
     public async Task SendAsyncEmail(string to, string subject, string body)
     {
-        var fromEmail = configuration["Gmail:UserEmail"];
-        if (string.IsNullOrWhiteSpace(fromEmail))
-        {
-            throw new InvalidOperationException("Missing configuration key: Gmail:UserEmail");
-        }
-
+        var fromEmail = configuration["Gmail:UserEmail"] ?? configuration["Email:UserEmail"] ?? string.Empty;
         IMail mailService = new Gmail(to, subject, body, fromEmail, configuration);
         await mailService.SendMail();
     }

@@ -29,7 +29,8 @@ app.MapHub<MonitorHub>("/hubs/monitor");
 
 app.MapGet("/api/alerts/settings", (AlertSettingsStore store) =>
 {
-    return Results.Ok(store.GetCurrentAlertSettings());
+    var current = store.GetCurrentAlertSettings();
+    return Results.Ok(AlertSettingsStore.ToResponse(current));
 });
 
 // store is from dependency injection, it will resolve the singleton instance of AlertSettingsStore that we registered in the services
@@ -37,7 +38,7 @@ app.MapGet("/api/alerts/settings", (AlertSettingsStore store) =>
 app.MapPost("/api/alerts/settings", (AlertSettingsUpdateRequest request, AlertSettingsStore store) =>
 {
     var updated = store.UpdateAlertSettings(request);
-    return Results.Ok(updated);
+    return Results.Ok(AlertSettingsStore.ToPostResponse(updated));
 });
 
 app.Run();

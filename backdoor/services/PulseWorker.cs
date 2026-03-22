@@ -126,7 +126,11 @@ public class PulseWorker : BackgroundService
             },
             cancellationToken: stoppingToken);
 
-        var toEmail = configuration["Gmail:AlertTo"] ?? configuration["Gmail:UserEmail"];
+        var toEmail = alertSettingsStore.GetCurrentAlertSettings().AlertToEmail;
+        if (string.IsNullOrWhiteSpace(toEmail))
+        {
+            toEmail = configuration["Gmail:UserEmail"];
+        }
         if (!string.IsNullOrWhiteSpace(toEmail))
         {
             await emailAlarm.SendAsyncEmail(

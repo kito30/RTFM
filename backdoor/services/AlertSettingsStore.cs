@@ -12,6 +12,7 @@ public sealed class AlertSettingsCurrent
     public double GpuThresholdPercent { get; init; }
     public double DiskThresholdPercent { get; init; }
     public int CooldownMinutes { get; init; }
+    public string AlertToEmail { get; init; } = string.Empty;
 }
 
 /// <summary>
@@ -24,6 +25,26 @@ public sealed class AlertSettingsUpdateRequest
     public double? GpuThresholdPercent { get; init; }
     public double? DiskThresholdPercent { get; init; }
     public int? CooldownMinutes { get; init; }
+    public string? AlertToEmail { get; init; }
+}
+
+public sealed class AlertSettingsResponse
+{
+    public double CpuThresholdPercent { get; init; }
+    public double MemoryThresholdPercent { get; init; }
+    public double GpuThresholdPercent { get; init; }
+    public double DiskThresholdPercent { get; init; }
+    public int CooldownMinutes { get; init; }
+}
+
+public sealed class AlertSettingsPostResponse
+{
+    public double CpuThresholdPercent { get; init; }
+    public double MemoryThresholdPercent { get; init; }
+    public double GpuThresholdPercent { get; init; }
+    public double DiskThresholdPercent { get; init; }
+    public int CooldownMinutes { get; init; }
+    public string? AlertToEmail { get; init; }
 }
 
 public sealed class AlertSettingsStore
@@ -40,7 +61,8 @@ public sealed class AlertSettingsStore
             MemoryThresholdPercent = ReadPercent(configuration, "Alert:MemoryThresholdPercent", 90d),
             GpuThresholdPercent = ReadPercent(configuration, "Alert:GpuThresholdPercent", 95d),
             DiskThresholdPercent = ReadPercent(configuration, "Alert:DiskThresholdPercent", 95d),
-            CooldownMinutes = Math.Max(configuration.GetValue("Alert:CooldownMinutes", 10), 1)
+            CooldownMinutes = Math.Max(configuration.GetValue("Alert:CooldownMinutes", 10), 1),
+            AlertToEmail = configuration["Gmail:AlertTo"] ?? configuration["Gmail:UserEmail"] ?? string.Empty
         };
     }
 
@@ -65,7 +87,8 @@ public sealed class AlertSettingsStore
                 MemoryThresholdPercent = ResolvePercent(request.MemoryThresholdPercent, current.MemoryThresholdPercent),
                 GpuThresholdPercent = ResolvePercent(request.GpuThresholdPercent, current.GpuThresholdPercent),
                 DiskThresholdPercent = ResolvePercent(request.DiskThresholdPercent, current.DiskThresholdPercent),
-                CooldownMinutes = request.CooldownMinutes is null ? current.CooldownMinutes : Math.Max(request.CooldownMinutes.Value, 1)
+                CooldownMinutes = request.CooldownMinutes is null ? current.CooldownMinutes : Math.Max(request.CooldownMinutes.Value, 1),
+                AlertToEmail = request.AlertToEmail?.Trim() ?? current.AlertToEmail
             };
 
             return current;
@@ -96,5 +119,30 @@ public sealed class AlertSettingsStore
         }
 
         return value.Value;
+    }
+
+    public static AlertSettingsResponse ToResponse(AlertSettingsCurrent current)
+    {
+        return new AlertSettingsResponse
+        {
+            CpuThresholdPercent = current.CpuThresholdPercent,
+            MemoryThresholdPercent = current.MemoryThresholdPercent,
+            GpuThresholdPercent = current.GpuThresholdPercent,
+            DiskThresholdPercent = current.DiskThresholdPercent,
+            CooldownMinutes = current.CooldownMinutes,
+        };
+    }
+
+    public static AlertSettingsPostResponse ToPostResponse(AlertSettingsCurrent current)
+    {
+        return new AlertSettingsPostResponse
+        {
+            CpuThresholdPercent = current.CpuThresholdPercent,
+            MemoryThresholdPercent = current.MemoryThresholdPercent,
+            GpuThresholdPercent = current.GpuThresholdPercent,
+            DiskThresholdPercent = current.DiskThresholdPercent,
+            CooldownMinutes = current.CooldownMinutes,
+            AlertToEmail = string.IsNullOrWhiteSpace(current.AlertToEmail) ? null : current.AlertToEmail,
+        };
     }
 }

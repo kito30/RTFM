@@ -34,18 +34,8 @@ public class Gmail : IMail
     
     private async Task ClientInit()
     {
-        var userEmail = _configuration["Gmail:UserEmail"];
-        var appPassword = _configuration["Gmail:AppPassword"];
-
-        if (string.IsNullOrWhiteSpace(userEmail))
-        {
-            throw new InvalidOperationException("Missing configuration key: Gmail:UserEmail");
-        }
-
-        if (string.IsNullOrWhiteSpace(appPassword))
-        {
-            throw new InvalidOperationException("Missing configuration key: Gmail:AppPassword");
-        }
+        var userEmail = _configuration["Gmail:UserEmail"] ?? _configuration["Email:UserEmail"];
+        var appPassword = _configuration["Gmail:AppPassword"] ?? _configuration["Email:AppPassword"];
 
         await client.ConnectAsync("smtp.gmail.com", 587, SecureSocketOptions.StartTls);
         await client.AuthenticateAsync(userEmail, appPassword);
