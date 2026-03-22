@@ -5,6 +5,7 @@ import { useSignalR } from "../context/signalRContext";
 import { MetricCard } from "./MetricCard";
 import { DiskCard } from "./DiskCard";
 import { CpuIcon, MemoryIcon, GpuIcon } from "./Icons";
+import AlertSettingsPanel from "./AlertSettingsPanel";
 
 interface SystemInfoData {
   cpuUsage: string;
@@ -51,6 +52,8 @@ export default function SystemInfo() {
           </span>
         </div>
       </header>
+
+      <AlertSettingsPanel />
 
       <main className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {/* CPU Card */}
