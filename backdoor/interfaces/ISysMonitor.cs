@@ -1,12 +1,11 @@
-namespace backdoor.services;
+namespace backdoor.interfaces;
 
 public interface ISysMonitor
 {
     string CpuUsage { get; }
-    string GpuUsage { get; }
+    List<GpuInfo> GpuUsage { get; }
     string MemoryUsage { get; }
-    string DiskUsage { get; }
+    Dictionary<string, string> DiskUsage { get; }
     string OS { get; }
     void UpdateSystemInfo();
 }
-
