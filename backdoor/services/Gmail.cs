@@ -1,6 +1,8 @@
 namespace backdoor.services;
 using MimeKit;
 using MailKit.Net.Smtp;
+using MailKit.Security;
+using Microsoft.Extensions.Configuration;
 
 public class Gmail : IMail
 {
@@ -32,8 +34,21 @@ public class Gmail : IMail
     
     private async Task ClientInit()
     {
-        await client.ConnectAsync("smtp.gmail.com", 587, MailKit.Security.SecureSocketOptions.StartTls);
-        await client.AuthenticateAsync(_configuration["Gmail:UserEmail"], _configuration["Gmail:AppPassword"]);
+        var userEmail = _configuration["Gmail:UserEmail"];
+        var appPassword = _configuration["Gmail:AppPassword"];
+
+        if (string.IsNullOrWhiteSpace(userEmail))
+        {
+            throw new InvalidOperationException("Missing configuration key: Gmail:UserEmail");
+        }
+
+        if (string.IsNullOrWhiteSpace(appPassword))
+        {
+            throw new InvalidOperationException("Missing configuration key: Gmail:AppPassword");
+        }
+
+        await client.ConnectAsync("smtp.gmail.com", 587, SecureSocketOptions.StartTls);
+        await client.AuthenticateAsync(userEmail, appPassword);
     }
     public async Task SendMail()
     {

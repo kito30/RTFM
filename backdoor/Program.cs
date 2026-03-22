@@ -16,12 +16,28 @@ builder.Services.AddCors(options =>
 });
 builder.Services.AddSingleton<ISysMonitor, SysMonitor>();
 builder.Services.AddSingleton<IHardwareInfo, HardwareInfo>();
+builder.Services.AddSingleton<EmailAlarm>();
+builder.Services.AddSingleton<AlertSettingsStore>();
 ///register a background service
 builder.Services.AddHostedService<PulseWorker>();
+
 
 var app = builder.Build();
 
 app.UseCors("AllowAll");
-
 app.MapHub<MonitorHub>("/hubs/monitor");
+
+app.MapGet("/api/alerts/settings", (AlertSettingsStore store) =>
+{
+    return Results.Ok(store.GetCurrentAlertSettings());
+});
+
+// store is from dependency injection, it will resolve the singleton instance of AlertSettingsStore that we registered in the services
+// The request will be automatically deserialized from json to AlertSettingsUpdateRequest by the framework
+app.MapPost("/api/alerts/settings", (AlertSettingsUpdateRequest request, AlertSettingsStore store) =>
+{
+    var updated = store.UpdateAlertSettings(request);
+    return Results.Ok(updated);
+});
+
 app.Run();
