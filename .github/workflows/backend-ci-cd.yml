@@ -6,12 +6,16 @@ on:
       - main
     paths:
       - backdoor/**
+      - backdoor.Tests/**
+      - backdoor.slnx
       - .github/workflows/backend-ci-cd.yml
   pull_request:
     branches:
       - main
     paths:
       - backdoor/**
+      - backdoor.Tests/**
+      - backdoor.slnx
       - .github/workflows/backend-ci-cd.yml
   workflow_dispatch:
 
@@ -19,9 +23,7 @@ permissions:
   contents: read
 
 env:
-  PROJECT_PATH: backdoor/backdoor.csproj
-  BUILD_CONFIGURATION: Release
-
+  SOLUTION_PATH: backdoor.slnx
 jobs:
   ci:
     name: Build and Validate
@@ -37,25 +39,13 @@ jobs:
           dotnet-version: 10.0.x
 
       - name: Restore dependencies
-        run: dotnet restore $PROJECT_PATH
+        run: dotnet restore
 
       - name: Build
-        run: dotnet build $PROJECT_PATH --configuration $BUILD_CONFIGURATION --no-restore
+        run: dotnet build --no-restore
 
-      - name: Run tests (if any test projects exist)
-        shell: bash
-        run: |
-          mapfile -t test_projects < <(find . -type f -name "*Tests.csproj")
-
-          if [ ${#test_projects[@]} -eq 0 ]; then
-            echo "No test projects found. Skipping test step."
-            exit 0
-          fi
-
-          for project in "${test_projects[@]}"; do
-            echo "Running tests for: $project"
-            dotnet test "$project" --configuration $BUILD_CONFIGURATION --no-build --verbosity normal
-          done
+      - name: Run backend tests from solution
+        run: dotnet test --no-restore
 
   cd:
     name: Publish Artifact
@@ -73,11 +63,11 @@ jobs:
           dotnet-version: 10.0.x
 
       - name: Publish backend
-        run: dotnet publish $PROJECT_PATH --configuration $BUILD_CONFIGURATION --output ./publish
+        run: dotnet publish backdoor/backdoor.csproj --configuration Release --output ./dll
 
       - name: Upload publish artifact
         uses: actions/upload-artifact@v4
         with:
           name: backdoor-publish
-          path: ./publish
+          path: ./dll
           if-no-files-found: error
