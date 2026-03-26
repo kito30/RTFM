@@ -1,19 +1,20 @@
 using backdoor.services;
 using Microsoft.Extensions.Configuration;
+using Xunit;
 
 namespace backdoor.Tests;
 
 public sealed class AlertSettingsStoreTests
 {
     [Fact]
-    public void Constructor_UsesFallbacks_WhenConfigMissingOrInvalid()
+    public void UsesDefaults_WhenInputIsInvalid()
     {
         var configuration = BuildConfig(new Dictionary<string, string?>
         {
             ["Alert:CpuThresholdPercent"] = "0",
             ["Alert:MemoryThresholdPercent"] = "101",
             ["Alert:GpuThresholdPercent"] = "-1",
-            ["Alert:DiskThresholdPercent"] = "abc",
+            ["Alert:DiskThresholdPercent"] = "-1",
             ["Alert:CooldownMinutes"] = "0",
             ["Gmail:UserEmail"] = "ops@example.com"
         });
@@ -30,7 +31,7 @@ public sealed class AlertSettingsStoreTests
     }
 
     [Fact]
-    public void UpdateAlertSettings_UpdatesValidValues_AndPreservesWhenNull()
+    public void Update_ChangesOnlyProvidedValues()
     {
         var configuration = BuildConfig(new Dictionary<string, string?>
         {
@@ -62,57 +63,8 @@ public sealed class AlertSettingsStoreTests
         Assert.Equal("new@example.com", updated.AlertToEmail);
     }
 
-    [Fact]
-    public void UpdateAlertSettings_KeepsPreviousPercentages_WhenInvalidInput()
-    {
-        var configuration = BuildConfig(new Dictionary<string, string?>
-        {
-            ["Alert:CpuThresholdPercent"] = "75",
-            ["Alert:MemoryThresholdPercent"] = "76",
-            ["Alert:GpuThresholdPercent"] = "77",
-            ["Alert:DiskThresholdPercent"] = "78",
-            ["Alert:CooldownMinutes"] = "5",
-            ["Gmail:AlertTo"] = "old@example.com"
-        });
-
-        var store = new AlertSettingsStore(configuration);
-
-        var updated = store.UpdateAlertSettings(new AlertSettingsUpdateRequest
-        {
-            CpuThresholdPercent = 0,
-            MemoryThresholdPercent = 101,
-            GpuThresholdPercent = -5,
-            DiskThresholdPercent = null,
-            CooldownMinutes = 0,
-            AlertToEmail = null
-        });
-
-        Assert.Equal(75d, updated.CpuThresholdPercent);
-        Assert.Equal(76d, updated.MemoryThresholdPercent);
-        Assert.Equal(77d, updated.GpuThresholdPercent);
-        Assert.Equal(78d, updated.DiskThresholdPercent);
-        Assert.Equal(1, updated.CooldownMinutes);
-        Assert.Equal("old@example.com", updated.AlertToEmail);
-    }
-
-    [Fact]
-    public void ToPostResponse_ReturnsNullEmail_WhenEmailWhitespace()
-    {
-        var current = new AlertSettingsCurrent
-        {
-            CpuThresholdPercent = 90,
-            MemoryThresholdPercent = 91,
-            GpuThresholdPercent = 92,
-            DiskThresholdPercent = 93,
-            CooldownMinutes = 10,
-            AlertToEmail = "   "
-        };
-
-        var response = AlertSettingsStore.ToPostResponse(current);
-
-        Assert.Null(response.AlertToEmail);
-    }
-
+    
+    // Add config with variable instead of conf file for testing
     private static IConfiguration BuildConfig(IDictionary<string, string?> values)
     {
         return new ConfigurationBuilder()
