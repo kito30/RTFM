@@ -1,4 +1,4 @@
-# RTFM: Real-Time Freakout Monitor
+# RTFM: Real-Time Functional Monitor
 
 So yes, this is a performance dashboard or performance.
 And yes, it will snitch on your machine/server by email when usage goes nuclear.
