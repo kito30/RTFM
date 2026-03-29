@@ -123,3 +123,9 @@ dotnet test backdoor.Tests/backdoor.Tests.csproj
 - Do not commit real email credentials.
 - Use `dotnet user-secrets` or environment variables.
 - If credentials were committed, rotate app passwords immediately.
+
+## Special Thanks
+
+| Project | Why it is awesome |
+| --- | --- |
+| [Hardware.Info](https://github.com/Jinjinov/Hardware.Info) | Gives this project the system metrics API so we can read hardware info|
