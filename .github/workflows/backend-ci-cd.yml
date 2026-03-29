@@ -7,6 +7,7 @@ on:
     paths:
       - backdoor/**
       - backdoor.Tests/**
+      - frontdoor/**
       - backdoor.slnx
       - .github/workflows/backend-ci-cd.yml
   pull_request:
@@ -15,6 +16,7 @@ on:
     paths:
       - backdoor/**
       - backdoor.Tests/**
+      - frontdoor/**
       - backdoor.slnx
       - .github/workflows/backend-ci-cd.yml
   workflow_dispatch:
@@ -25,8 +27,8 @@ permissions:
 env:
   SOLUTION_PATH: backdoor.slnx
 jobs:
-  ci:
-    name: Build and Validate
+  tests:
+    name: Backend and Frontend Tests
     runs-on: ubuntu-latest
 
     steps:
@@ -47,10 +49,25 @@ jobs:
       - name: Run backend tests from solution
         run: dotnet test --no-restore
 
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: frontdoor/package-lock.json
+
+      - name: Install frontend dependencies
+        run: npm ci
+        working-directory: frontdoor
+
+      - name: Run frontend tests
+        run: npm test -- --ci --watchAll=false
+        working-directory: frontdoor
+
   cd:
     name: Publish Artifact
     runs-on: ubuntu-latest
-    needs: ci
+    needs: [tests]
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
 
     steps:
